@@ -199,7 +199,7 @@ class TasksView:
 
     @classmethod
     def get_columns(cls):
-        return ["id", "name", "state", "runtime", "changes"]
+        return ["name", "state", "runtime", "changes"]
 
 class DailyWorkSummaryView:
     def __init__(self, tasks: Tasks, daily_activities: Activities):
