@@ -55,17 +55,22 @@ app.layout = html.Div([
     Output("table-tasks", "data"),
     Output("table-tasks", "selected_cells"),
     Output("table-tasks", "active_cell"),
+    Output("table-daily-summaries", "data"),
     Input("table-tasks", "active_cell"),
     State("table-tasks", "derived_viewport_data"),
 )
 def cell_clicked(active_cell, data):
+    print("cell clicked", active_cell)
     if active_cell:
         row = active_cell["row"]
         ctrl.change_task_state(data[row]["id"])
 
-        return ctrl.get_tasks_view().get_data(), [], None
-
-    return dash.no_update
+    return (
+        ctrl.get_tasks_view().get_data(),
+        [],
+        None,
+        ctrl.get_daily_summary_table(5).get_data()
+    )
 
 
 if __name__ == "__main__":

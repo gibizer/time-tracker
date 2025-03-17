@@ -318,14 +318,6 @@ class Controller:
         with open("activities.json", "w") as fp:
             json.dump(self.activities.to_primitive(), fp, indent=2)
 
-    def get_daily_summary(self, day: Optional[datetime.date] = None):
-        if not day:
-            day = datetime.date.today()
-
-        return DailyWorkSummaryView(
-            self.tasks, self.activities.filter_by_day(day))
-
-
     def get_daily_summary_table(
         self,
         days_back: int
