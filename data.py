@@ -197,7 +197,8 @@ class TasksView:
 
         return data
 
-    def get_columns(self):
+    @classmethod
+    def get_columns(cls):
         return ["id", "name", "state", "runtime", "changes"]
 
 class DailyWorkSummaryView:

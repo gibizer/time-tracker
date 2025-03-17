@@ -23,7 +23,7 @@ app.layout = html.Div([
             fixed_rows={'headers': True},
             columns=[
                 {"id": n, "name": n}
-                for n in ctrl.get_tasks_view().get_columns()],
+                for n in data.TasksView.get_columns()],
             data=ctrl.get_tasks_view().get_data(),
             editable=False,
             style_data_conditional=[
