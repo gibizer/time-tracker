@@ -232,11 +232,11 @@ class DailyWorkSummaryTableView:
     def __init__(self, tasks: Tasks, activities: Activities, nr_of_days: int):
         day = datetime.date.today()
         self.daily_sums: List[DailyWorkSummaryView] = []
-        self.days = []
+        self.days : List[datetime.date]= []
         for _ in range(nr_of_days):
-            if day.weekday == 5: # saturday
+            if day.weekday() == 5: # saturday
                 day = day - datetime.timedelta(days=1) # move back to friday
-            if day.weekday == 6: # sunday
+            if day.weekday() == 6: # sunday
                 day = day - datetime.timedelta(days=2) # move back to friday
 
             daily_acts = activities.filter_by_day(day)
@@ -258,6 +258,7 @@ class DailyWorkSummaryTableView:
     def get_data(self):
         data = []
         for day, sum in zip(self.days, self.daily_sums):
+            day_ = day.strftime("%m.%d. %A")
             start = sum.get_start_time().strftime("%H:%M:%S")
             end = sum.get_end_time().strftime("%H:%M:%S")
             # round to seconds precision for display
@@ -268,7 +269,7 @@ class DailyWorkSummaryTableView:
                 sum.get_activated_task_names(), key=lambda v: v.lower())
 
             data.append({
-                "day": day,
+                "day": day_,
                 "start": start,
                 "end": end,
                 "total": total,
