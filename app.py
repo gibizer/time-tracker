@@ -62,8 +62,8 @@ app.layout = html.Div([
 def cell_clicked(active_cell, data):
     print("cell clicked", active_cell)
     if active_cell:
-        row = active_cell["row"]
-        ctrl.change_task_state(data[row]["id"])
+        task_id = active_cell["row_id"]
+        ctrl.change_task_state(task_id)
 
     return (
         ctrl.get_tasks_view().get_data(),
