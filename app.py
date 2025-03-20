@@ -60,7 +60,6 @@ app.layout = html.Div([
     State("table-tasks", "derived_viewport_data"),
 )
 def cell_clicked(active_cell, data):
-    print("cell clicked", active_cell)
     if active_cell:
         task_id = active_cell["row_id"]
         ctrl.change_task_state(task_id)
