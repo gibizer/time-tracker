@@ -54,6 +54,16 @@ class Tasks:
     def to_primitive(self):
         return [task.to_primitive() for task in self.tasks]
 
+    def __iter__(self):
+        for t in self.tasks:
+            yield t
+
+    def __getitem__(self, i):
+        return self.tasks[i]
+
+    def __len__(self):
+        return len(self.tasks)
+
 class Action(enum.Enum):
     START = 1
     STOP = 2
