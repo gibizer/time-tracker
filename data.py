@@ -259,7 +259,9 @@ class DailyWorkSummaryTableView:
 
             daily_acts = activities.filter_by_day(day)
             if not daily_acts:
-                continue # skip empty days
+                # skip empty days
+                day = day - datetime.timedelta(days=1)
+                continue
 
             self.days.append(day)
             self.daily_sums.append(
