@@ -195,7 +195,15 @@ class TasksView:
         active_task_id = self.activities.get_active_task_id()
         acts_by_task_id = self.activities.get_activities_by_task_id()
 
-        for task in self.tasks.tasks:
+        def by_last_activity(task: Task) -> int:
+            a_by_t = self.activities.filter_by_task(task.id)
+            latest = 0
+            if a_by_t:
+                latest = datetime.datetime.fromisoformat(
+                    a_by_t[-1].at).timestamp()
+            return latest
+
+        for task in sorted(self.tasks, key=by_last_activity, reverse=True):
             d = {
                 "id": task.id,
                 "name": task.name,
