@@ -35,7 +35,9 @@ app.layout = html.Div([
                 'backgroundColor': 'red',
                 'color': 'white'
             },
-            ]
+            ],
+            filter_action="native",
+            page_size=10,
         ),
     ]),
     html.Div([
@@ -45,8 +47,9 @@ app.layout = html.Div([
             columns=[
                 {"id": n, "name": n}
                 for n in data.DailyWorkSummaryTableView.get_columns()],
-            data=ctrl.get_daily_summary_table(5).get_data(),
+            data=ctrl.get_daily_summary_table(30).get_data(),
             editable=False,
+            page_size=10,
         ),
     ]),
 ])
@@ -68,7 +71,7 @@ def cell_clicked(active_cell, data):
         ctrl.get_tasks_view().get_data(),
         [],
         None,
-        ctrl.get_daily_summary_table(5).get_data()
+        ctrl.get_daily_summary_table(30).get_data()
     )
 
 
