@@ -38,8 +38,13 @@ app.layout = html.Div([
             ],
             filter_action="native",
             page_size=10,
+            style_cell={'textAlign': 'left'},
+            style_header={
+                'fontWeight': 'bold'
+            },
         ),
     ]),
+    html.Hr(),
     html.Div([
         dash_table.DataTable(
             id='table-daily-summaries',
@@ -50,6 +55,10 @@ app.layout = html.Div([
             data=ctrl.get_daily_summary_table(30).get_data(),
             editable=False,
             page_size=10,
+            style_cell={'textAlign': 'left'},
+            style_header={
+                'fontWeight': 'bold'
+            },
         ),
     ]),
 ])
