@@ -5,6 +5,7 @@ import logging
 import datetime
 import math
 
+MAX_DAILY_SUMMARIES = 31  # days
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -54,7 +55,7 @@ app.layout = html.Div([
             columns=[
                 {"id": n, "name": n}
                 for n in data.DailyWorkSummaryTableView.get_columns()],
-            data=ctrl.get_daily_summary_table(30).get_data(),
+            data=ctrl.get_daily_summary_table(MAX_DAILY_SUMMARIES).get_data(),
             editable=False,
             page_size=10,
             style_cell={'textAlign': 'left'},
@@ -83,7 +84,7 @@ def cell_clicked(active_cell, data):
         ctrl.get_tasks_view().get_data(),
         [],
         None,
-        ctrl.get_daily_summary_table(30).get_data(),
+        ctrl.get_daily_summary_table(MAX_DAILY_SUMMARIES).get_data(),
         ctrl.get_active_task_name(),
     )
 
