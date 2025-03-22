@@ -30,11 +30,9 @@ layout = html.Div([
             style_data_conditional=[
             {
                 'if': {
-                    'column_id': 'state',
                     'filter_query': '{state} = running',
                 },
-                'backgroundColor': 'red',
-                'color': 'white'
+                'backgroundColor': 'salmon',
             },
             ],
             filter_action="native",
