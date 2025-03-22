@@ -92,6 +92,12 @@ dash.clientside_callback(
     """
     function(title) {
         document.title = title
+        var link = document.querySelector("link[rel~='icon']");
+        if (title === "") {
+            link.href = 'https://images.icon-icons.com/934/PNG/512/pause-multimedia-big-gross-symbol-lines_icon-icons.com_72964.png';
+        }else{
+            link.href = 'https://images.icon-icons.com/934/PNG/512/play-black-triangle-interface-symbol-for-multimedia_icon-icons.com_72958.png';
+        }
     }
     """,
     Output('empty', 'children'),
