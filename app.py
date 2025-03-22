@@ -1,5 +1,5 @@
 import dash
-from dash import Dash, html, dash_table, Output, Input, State, dcc
+from dash import Dash, html, dash_table, Output, Input, State
 import data
 import logging
 import datetime
@@ -17,6 +17,8 @@ ctrl = data.Controller()
 app = Dash(__name__)
 
 app.layout = html.Div([
+    html.H1(id="title",children="", hidden=True),
+    html.Div(id="empty"),
     html.Div([
         dash_table.DataTable(
             id='table-tasks',
@@ -68,6 +70,7 @@ app.layout = html.Div([
     Output("table-tasks", "selected_cells"),
     Output("table-tasks", "active_cell"),
     Output("table-daily-summaries", "data"),
+    Output("title", "children"),
     Input("table-tasks", "active_cell"),
     State("table-tasks", "derived_viewport_data"),
 )
@@ -80,9 +83,20 @@ def cell_clicked(active_cell, data):
         ctrl.get_tasks_view().get_data(),
         [],
         None,
-        ctrl.get_daily_summary_table(30).get_data()
+        ctrl.get_daily_summary_table(30).get_data(),
+        ctrl.get_active_task_name(),
     )
 
+
+dash.clientside_callback(
+    """
+    function(title) {
+        document.title = title
+    }
+    """,
+    Output('empty', 'children'),
+    Input('title', 'children'),
+)
 
 if __name__ == "__main__":
     app.run_server(debug=True)

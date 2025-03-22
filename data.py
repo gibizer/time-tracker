@@ -344,3 +344,14 @@ class Controller:
     ) -> DailyWorkSummaryTableView:
         return DailyWorkSummaryTableView(
             self.tasks, self.activities, days_back)
+
+    def get_active_task(self) -> Optional[Task]:
+        active_id = self.activities.get_active_task_id()
+        if not active_id:
+            return None
+
+        return self.tasks.get_by_id(active_id)
+
+    def get_active_task_name(self) -> str:
+        task = self.get_active_task()
+        return task.name if task else ""
