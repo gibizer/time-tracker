@@ -355,3 +355,9 @@ class Controller:
     def get_active_task_name(self) -> str:
         task = self.get_active_task()
         return task.name if task else ""
+
+    def add_task(self, name:str) -> Task:
+        task = self.tasks.create_one(name)
+        self.save()
+        LOG.info("Adding task '%s'(%d)", task.name, task.id)
+        return task

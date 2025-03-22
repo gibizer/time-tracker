@@ -1,5 +1,5 @@
 import dash
-from dash import Dash, html, dash_table, Output, Input, State
+from dash import Dash, html, dash_table, Output, Input, State, dcc
 import data
 import logging
 import datetime
@@ -46,6 +46,14 @@ app.layout = html.Div([
                 'fontWeight': 'bold'
             },
         ),
+        dcc.Input(
+            id="task-name-input",
+            placeholder="new task name",
+        ),
+        html.Button(
+            id="new-task-button",
+            children="Start New",
+        ),
     ]),
     html.Hr(),
     html.Div([
@@ -85,6 +93,26 @@ def cell_clicked(active_cell, data):
         [],
         None,
         ctrl.get_daily_summary_table(MAX_DAILY_SUMMARIES).get_data(),
+        ctrl.get_active_task_name(),
+    )
+
+@app.callback(
+    Output("table-tasks", "data", allow_duplicate=True),
+    Output("table-daily-summaries", "data", allow_duplicate=True),
+    Output("task-name-input", "value"),
+    Output("title", "children", allow_duplicate=True),
+    State("task-name-input", "value"),
+    Input("new-task-button", "n_clicks"),
+    prevent_initial_call=True,
+)
+def add_new_task(name, n_clicks):
+    print(name, n_clicks)
+    task = ctrl.add_task(name)
+    ctrl.change_task_state(task.id)
+    return (
+        ctrl.get_tasks_view().get_data(),
+        ctrl.get_daily_summary_table(MAX_DAILY_SUMMARIES).get_data(),
+        "",
         ctrl.get_active_task_name(),
     )
 
