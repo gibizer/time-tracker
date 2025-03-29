@@ -8,6 +8,7 @@ import collections
 import logging
 import math
 import itertools
+import pandas as pd
 
 LOG = logging.getLogger(__name__)
 
@@ -149,6 +150,17 @@ class Activities:
             ]
         return Activities(daily_activities)
 
+    def filter_by_date_range(
+        self,
+        start: datetime.date,
+        end: datetime.date
+    ) -> "Activities":
+        activities = [
+            a for a in self.activities
+            if start <= datetime.datetime.fromisoformat(a.at).date() <= end
+            ]
+        return Activities(activities)
+
     def filter_by_task(self, task_id: int) -> "Activities":
         return Activities([a for a in self.activities if a.task_id == task_id])
 
@@ -183,6 +195,26 @@ class Activities:
     def __len__(self):
         return len(self.activities)
 
+class TasksDataFrame:
+    def __init__(self, tasks: Tasks, activities: Activities):
+        self.tasks = tasks
+        self.activities = activities
+
+    def get_df(self) -> pd.DataFrame:
+        name = []
+        runtime = []
+        runtime_str = []
+        for task in self.tasks:
+            name.append(task.name)
+            r = self.activities.get_task_runtime(task.id)
+            runtime.append(r)
+            runtime_str.append(
+                str(datetime.timedelta(seconds=math.floor(r.total_seconds()))))
+        return pd.DataFrame({
+            "name": name,
+            "runtime": runtime,
+            "runtime_str": runtime_str,
+        })
 
 class TasksView:
     def __init__(self, tasks: Tasks, activities: Activities):
@@ -300,13 +332,25 @@ class DailyWorkSummaryTableView:
 
 
 
+CONTROLLER = None
+
 class Controller:
+
+    @classmethod
+    def get(cls):
+        global CONTROLLER
+        if not CONTROLLER:
+            CONTROLLER = cls()
+        return CONTROLLER
+
     def __init__(self):
         with open("tasks.json", 'r') as fp:
             self.tasks = Tasks.from_primitive(json.load(fp))
 
         with open("activities.json", 'r') as fp:
             self.activities = Activities.from_primitive(json.load(fp))
+
+        LOG.info("Data loaded from disk")
 
     def get_tasks_view(self) -> TasksView:
         return TasksView(self.tasks, self.activities)
@@ -361,3 +405,16 @@ class Controller:
         self.save()
         LOG.info("Adding task '%s'(%d)", task.name, task.id)
         return task
+
+    def get_tasks_dataframe(
+        self,
+        start_date: datetime.date,
+        end_date: datetime.date,
+    ) -> pd.DataFrame:
+        return TasksDataFrame(
+            self.tasks,
+            self.activities.filter_by_date_range(start_date, end_date)
+        ).get_df()
+
+    def get_first_activity_date(self) -> datetime.datetime:
+        return datetime.datetime.fromisoformat(self.activities[0].at)

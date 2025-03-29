@@ -13,7 +13,7 @@ logging.basicConfig(
 
 dash.register_page(__name__, path='/')
 
-ctrl = data.Controller()
+ctrl = data.Controller.get()
 
 layout = html.Div([
     html.H1(id="title",children="", hidden=True),
