@@ -13,9 +13,10 @@ import pandas as pd
 LOG = logging.getLogger(__name__)
 
 class Task:
-    def __init__(self, id: int, name: str):
+    def __init__(self, id: int, name: str, labels: dict = None):
         self.id = id
         self.name = name
+        self.labels = labels or {}
 
     @classmethod
     def from_primitive(cls, primitive):
@@ -25,6 +26,7 @@ class Task:
         return {
             "id": self.id,
             "name": self.name,
+            "labels": self.labels
         }
 
 class Tasks:
@@ -201,20 +203,32 @@ class TasksDataFrame:
         self.activities = activities
 
     def get_df(self) -> pd.DataFrame:
+
+        label_keys = set()
+        for task in self.tasks:
+            label_keys |= task.labels.keys()
+
         name = []
         runtime = []
         runtime_str = []
+        labels = collections.defaultdict(list)
         for task in self.tasks:
             name.append(task.name)
             r = self.activities.get_task_runtime(task.id)
             runtime.append(r)
             runtime_str.append(
                 str(datetime.timedelta(seconds=math.floor(r.total_seconds()))))
-        return pd.DataFrame({
+            for key in label_keys:
+                labels[key].append(task.labels.get(key, None))
+
+        df = {
             "name": name,
             "runtime": runtime,
             "runtime_str": runtime_str,
-        })
+        }
+        df.update(labels)
+
+        return pd.DataFrame(df)
 
 class TasksView:
     def __init__(self, tasks: Tasks, activities: Activities):

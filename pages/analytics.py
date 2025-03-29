@@ -9,9 +9,10 @@ dash.register_page(__name__)
 
 ctrl = data.Controller.get()
 
-
-def get_tasks_pie(start_date_str=None, end_date_str=None):
-
+def parse_time_range(
+    start_date_str=None,
+    end_date_str=None,
+):
     if start_date_str is None:
         start = datetime.date.today() - datetime.timedelta(days=7)
     else:
@@ -22,11 +23,20 @@ def get_tasks_pie(start_date_str=None, end_date_str=None):
     else:
         end = datetime.date.fromisoformat(end_date_str)
 
+    return start, end
+
+
+def get_tasks_pie(
+    start_date_str=None,
+    end_date_str=None,
+    group_by="name",
+):
+    start, end = parse_time_range(start_date_str, end_date_str)
 
     fig=px.pie(
         ctrl.get_tasks_dataframe(start, end),
         values="runtime",
-        names="name",
+        names=group_by,
         hover_data="runtime_str",
         title=f"Tasks distribution by runtime between {start} - {end}",
     )
@@ -48,6 +58,11 @@ layout = html.Div([
         first_day_of_week=1,
         minimum_nights=0,
     ),
+    dcc.Dropdown(
+        id='category-dropdown',
+        options=[o for o in ctrl.get_tasks_dataframe(*parse_time_range()) if o not in ["runtime", "runtime_str"]],
+        value="name",
+    ),
     dcc.Graph(
         id='tasks-pie-chart',
         figure=get_tasks_pie(),
@@ -58,7 +73,8 @@ layout = html.Div([
 @dash.callback(
     Output('tasks-pie-chart', 'figure'),
     Input('my-date-picker-range', 'start_date'),
-    Input('my-date-picker-range', 'end_date'))
-def update_output(start_date, end_date):
-
-    return get_tasks_pie(start_date, end_date)
+    Input('my-date-picker-range', 'end_date'),
+    Input('category-dropdown', 'value'),
+)
+def update_pie_chart(start_date, end_date, category):
+    return get_tasks_pie(start_date, end_date, category)
