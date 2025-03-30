@@ -33,19 +33,21 @@ def get_tasks_pie(
 ):
     start, end = parse_time_range(start_date_str, end_date_str)
 
+    df = ctrl.get_tasks_dataframe(start, end)
+
     fig=px.pie(
-        ctrl.get_tasks_dataframe(start, end),
+        df,
         values="runtime",
         names=group_by,
-        hover_data="runtime_str",
+        hover_data="runtime_str" if group_by == "name" else None,
         title=f"Tasks distribution by runtime between {start} - {end}",
     )
-    hovertemplate = "<b>%{label}</b><br>runtime: %{customdata[0]}"
     fig.update_traces(
         textposition='inside',
         textinfo='percent+label',
-        hovertemplate=hovertemplate,
     )
+    fig.update_layout(showlegend=False)
+
     return fig
 
 
