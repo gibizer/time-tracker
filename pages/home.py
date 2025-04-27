@@ -77,13 +77,16 @@ layout = html.Div([
     Output("table-tasks", "active_cell"),
     Output("table-daily-summaries", "data"),
     Output("title", "children"),
+    Output("table-tasks", "filter_query"),
     Input("table-tasks", "active_cell"),
     State("table-tasks", "derived_viewport_data"),
 )
 def cell_clicked(active_cell, data):
+    reset_filter = False
     if active_cell:
         task_id = active_cell["row_id"]
         ctrl.change_task_state(task_id)
+        reset_filter = True
 
     return (
         ctrl.get_tasks_view().get_data(),
@@ -91,6 +94,7 @@ def cell_clicked(active_cell, data):
         None,
         ctrl.get_daily_summary_table(MAX_DAILY_SUMMARIES).get_data(),
         ctrl.get_active_task_name(),
+        "" if reset_filter else dash.no_update,
     )
 
 @dash.callback(
