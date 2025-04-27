@@ -344,6 +344,61 @@ class DailyWorkSummaryTableView:
             })
         return data
 
+class DailyTimelineDataFrame:
+    def __init__(self, tasks: Tasks, activities: Activities):
+        self.tasks = tasks
+        self.activities = copy.deepcopy(activities)
+
+    def get_df(self) -> pd.DataFrame:
+
+        if not self.activities:
+            return pd.DataFrame({
+            "name": [],
+            "start": [],
+            "end": [],
+        })
+
+        # ensure that the the frame has a proper start with an start action
+        # and an end with an end action. Insert dummy actions if needed
+        if self.activities[0].action != Action.START:
+            dummy_start = copy.deepcopy(self.activities[0])
+            dummy_start.action = Action.START
+            first = datetime.datetime.fromisoformat(dummy_start.at)
+            dummy_start.at = first.replace(
+                hours=0, minute=0, second=0).isoformat()
+
+            self.activities.activities.insert(0, dummy_start)
+
+        if self.activities[-1].action != Action.STOP:
+            dummy_end = copy.deepcopy(self.activities[-1])
+            dummy_end.action = Action.STOP
+            last = datetime.datetime.fromisoformat(dummy_end.at)
+            if last.date() == datetime.date.today():
+                dummy_end.at = datetime.datetime.now().isoformat()
+            else:
+                dummy_end.at = last.replace(
+                    hours=23, minute=59, second=59).isoformat()
+
+            self.activities.activities.append(dummy_end)
+
+        names = []
+        starts = []
+        ends = []
+        # as we ensured above we can assume that activities come in
+        # start,stop pairs in the list
+        for start, stop in itertools.batched(self.activities, n=2):
+            names.append(self.tasks.get_by_id(start.task_id).name)
+            starts.append(start.at)
+            ends.append(stop.at)
+
+        df = {
+            "name": names,
+            "start": starts,
+            "end": ends,
+        }
+
+        return pd.DataFrame(df)
+
 
 
 CONTROLLER = None
@@ -432,3 +487,7 @@ class Controller:
 
     def get_first_activity_date(self) -> datetime.datetime:
         return datetime.datetime.fromisoformat(self.activities[0].at)
+
+    def get_daily_timeline_dataframe(self, at: datetime.date):
+        return DailyTimelineDataFrame(
+            self.tasks, self.activities.filter_by_day(at)).get_df()

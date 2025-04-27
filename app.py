@@ -17,6 +17,7 @@ app.layout = html.Div([
                 html.Tr([
                     html.Th(dcc.Link("Home", href="/")),
                     html.Th(dcc.Link("Analytics", href="/analytics")),
+                    html.Th(dcc.Link("Timeline", href="/timeline")),
                 ])
             )
         ),
