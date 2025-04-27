@@ -36,6 +36,7 @@ layout = html.Div([
             },
             ],
             filter_action="native",
+            filter_options={"case": "insensitive"},
             page_size=10,
             style_cell={'textAlign': 'left'},
             style_header={
