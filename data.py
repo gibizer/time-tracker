@@ -9,6 +9,7 @@ import logging
 import math
 import itertools
 import pandas as pd
+import sys
 
 LOG = logging.getLogger(__name__)
 
@@ -413,10 +414,14 @@ class Controller:
         return CONTROLLER
 
     def __init__(self):
-        with open("tasks.json", 'r') as fp:
+        self.data_dir="."
+        if len(sys.argv) > 1:
+            self.data_dir = sys.argv[1]
+
+        with open(self.data_dir + "/tasks.json", 'r') as fp:
             self.tasks = Tasks.from_primitive(json.load(fp))
 
-        with open("activities.json", 'r') as fp:
+        with open(self.data_dir + "/activities.json", 'r') as fp:
             self.activities = Activities.from_primitive(json.load(fp))
 
         LOG.info("Data loaded from disk")
@@ -445,10 +450,10 @@ class Controller:
         self.activities.create_one(task_id, Action.START)
 
     def save(self):
-        with open("tasks.json", "w") as fp:
+        with open(self.data_dir + "/tasks.json", "w") as fp:
             json.dump(self.tasks.to_primitive(), fp, indent=2)
 
-        with open("activities.json", "w") as fp:
+        with open(self.data_dir + "/activities.json", "w") as fp:
             json.dump(self.activities.to_primitive(), fp, indent=2)
 
     def get_daily_summary_table(
