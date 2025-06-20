@@ -6,6 +6,7 @@ Image=time-tracker:latest
 Network=host
 UserNS=keep-id
 Volume=/srv/time-tracker/data:/data
+Environment="TZ=Europe/Budapest"
 
 [Install]
 # Start by default on boot
