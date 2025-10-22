@@ -366,7 +366,7 @@ class DailyTimelineDataFrame:
             dummy_start.action = Action.START
             first = datetime.datetime.fromisoformat(dummy_start.at)
             dummy_start.at = first.replace(
-                hours=0, minute=0, second=0).isoformat()
+                hour=0, minute=0, second=0).isoformat()
 
             self.activities.activities.insert(0, dummy_start)
 
@@ -378,7 +378,7 @@ class DailyTimelineDataFrame:
                 dummy_end.at = datetime.datetime.now().isoformat()
             else:
                 dummy_end.at = last.replace(
-                    hours=23, minute=59, second=59).isoformat()
+                    hour=23, minute=59, second=59).isoformat()
 
             self.activities.activities.append(dummy_end)
 
